@@ -111,6 +111,8 @@ class AutoRun:
     def enter(boy,e):
         if a_down(e):
             boy.dir, boy.action = 1,1
+        boy.wait_time = get_time()
+        pass
 
     @staticmethod
     def exit(boy,e):
@@ -125,6 +127,8 @@ class AutoRun:
         elif boy.x < 0:
             boy.dir, boy.action = 1,1
 
+        if get_time() - boy.wait_time > 5:
+            boy.state_machine.handle_event(('TIME_OUT', 0))
         pass
 
     @staticmethod
@@ -144,7 +148,7 @@ class StateMachine:
             Idle: { right_down: Run,left_down: Run,left_up: Run,right_up: Run,time_out : Sleep,a_down: AutoRun},
             Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle,a_down: AutoRun},
             Sleep: {right_down: Run, left_down: Run, right_up: Run, left_up: Run, space_down: Idle,a_down: AutoRun},
-            AutoRun: {a_down: AutoRun}
+            AutoRun: {a_down: AutoRun,time_out : Idle,}
         }
 
     def handle_event(self, e):
